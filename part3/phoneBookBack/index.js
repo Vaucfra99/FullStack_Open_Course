@@ -1,5 +1,11 @@
 const express = require('express');
+const morgan = require('morgan');
+
+morgan.token('data', function(req, res){return JSON.stringify(req.body)})
+morgan.token('content-length', function(req, res){return (JSON.stringify(req.body).length)})
+
 const app = express();
+app.use(morgan(':method :url :content-length :status :response-time :data'))
 app.use(express.json());
 
 const getTime = () => {
