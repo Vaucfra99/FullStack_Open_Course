@@ -1,12 +1,21 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
-morgan.token('data', function(req, res){return JSON.stringify(req.body)})
-morgan.token('content-length', function(req, res){return (JSON.stringify(req.body).length)})
+morgan.token('data', function (req, res) {
+  return JSON.stringify(req.body || {});
+});
+
+morgan.token('content-length', function (req, res) {
+  return req.body ? JSON.stringify(req.body).length : 0;
+});
 
 const app = express();
-app.use(morgan(':method :url :content-length :status :response-time :data'))
+
 app.use(express.json());
+app.use(cors());
+app.use(express.static('dist'));
+app.use(morgan(':method :url :content-length :status :response-time :data'));
 
 const getTime = () => {
   const iniDate = new Date();
@@ -89,7 +98,7 @@ app.post('/api/persons', (request, response) => {
   }
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
